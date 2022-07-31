@@ -1,0 +1,10 @@
+- name: Install the latest version of Apache
+  dnf:
+    name: httpd
+    state: latest
+
+- name: Enable service httpd
+  systemd:
+    name: httpd
+    state: started
+    enabled: yes

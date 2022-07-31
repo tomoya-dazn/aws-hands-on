@@ -1,0 +1,7 @@
+- name: Install php
+  dnf:
+    name:
+      - php
+      - php-mysqlnd
+      - php-json
+    state: latest

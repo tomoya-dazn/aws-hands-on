@@ -1,0 +1,9 @@
+- hosts: all
+  remote_user: vagrant
+  become: yes
+  roles:
+    - upgrade-packages
+    - install-development-tools
+    - install-php
+    - install-wordpress
+    - install-httpd
