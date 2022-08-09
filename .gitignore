@@ -6,3 +6,4 @@ variables.json
 .terraform.lock.hcl
 terraform.tfvars
 terraform.tfstate
+terraform.tfstate.backup
