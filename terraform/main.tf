@@ -21,6 +21,9 @@ variable "secret_key" {
 variable "default_vpc_id" {
 }
 
+variable "default_route_id" {
+}
+
 variable "wordpress_ami" {
 }
 
@@ -38,6 +41,12 @@ resource "aws_internet_gateway" "gw" {
   tags = {
     name = "wordpress_internet_gateway"
   }
+}
+
+resource "aws_route" "default_route_table" {
+  route_table_id         = var.default_route_id
+  gateway_id             = aws_internet_gateway.gw.id
+  destination_cidr_block = "0.0.0.0/0"
 }
 
 resource "aws_subnet" "public_1a" {
@@ -134,5 +143,17 @@ resource "aws_instance" "wordpress_1" {
 
   tags = {
     Name = "wordpress-1a"
+  }
+}
+
+resource "aws_instance" "wordpress_2" {
+  ami                    = var.wordpress_ami
+  instance_type          = "t2.micro"
+  key_name               = var.key_name
+  subnet_id              = aws_subnet.public_1c.id
+  vpc_security_group_ids = [aws_security_group.webserver_sg.id]
+
+  tags = {
+    Name = "wordpress-1c"
   }
 }
