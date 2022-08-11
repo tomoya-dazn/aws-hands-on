@@ -21,6 +21,9 @@ variable "secret_key" {
 variable "default_vpc_id" {
 }
 
+variable "default_route_id" {
+}
+
 variable "wordpress_ami" {
 }
 
@@ -38,6 +41,12 @@ resource "aws_internet_gateway" "gw" {
   tags = {
     name = "wordpress_internet_gateway"
   }
+}
+
+resource "aws_route" "default_route_table" {
+  route_table_id         = var.default_route_id
+  gateway_id             = aws_internet_gateway.gw.id
+  destination_cidr_block = "0.0.0.0/0"
 }
 
 resource "aws_subnet" "public_1a" {
@@ -134,5 +143,42 @@ resource "aws_instance" "wordpress_1" {
 
   tags = {
     Name = "wordpress-1a"
+  }
+}
+
+resource "aws_lb_target_group" "wordpress_target_group" {
+  target_type      = "instance"
+  name             = "wordpress-target-group"
+  vpc_id           = var.default_vpc_id
+  protocol_version = "HTTP1"
+  protocol         = "HTTP"
+  port             = 80
+  health_check {
+    protocol = "HTTP"
+    path     = "/wp-includes/images/blank.gif"
+  }
+}
+
+resource "aws_lb_target_group_attachment" "wordpress_target_group_attachment" {
+  target_group_arn = aws_lb_target_group.wordpress_target_group.id
+  target_id        = aws_instance.wordpress_1.id
+}
+
+resource "aws_lb" "wordpreess_alb" {
+  load_balancer_type = "application"
+  name               = "wordpress-alb"
+  internal           = false
+  ip_address_type    = "ipv4"
+  security_groups    = [aws_security_group.webserver_sg.id]
+  subnets            = [aws_subnet.public_1a.id, aws_subnet.public_1c.id]
+}
+
+resource "aws_lb_listener" "wordpress_alb_listener" {
+  load_balancer_arn = aws_lb.wordpreess_alb.arn
+  port              = "80"
+  protocol          = "HTTP"
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.wordpress_target_group.arn
   }
 }
