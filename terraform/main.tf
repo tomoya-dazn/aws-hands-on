@@ -146,7 +146,7 @@ resource "aws_instance" "wordpress_1" {
   }
 }
 
-resource "aws_lb_target_group" "wordpress_target_group" {
+resource "aws_lb_target_group" "wordpress_lb_target_group" {
   target_type      = "instance"
   name             = "wordpress-target-group"
   vpc_id           = var.default_vpc_id
@@ -159,8 +159,8 @@ resource "aws_lb_target_group" "wordpress_target_group" {
   }
 }
 
-resource "aws_lb_target_group_attachment" "wordpress_target_group_attachment" {
-  target_group_arn = aws_lb_target_group.wordpress_target_group.id
+resource "aws_lb_target_group_attachment" "wordpress_lb_target_group_attachment" {
+  target_group_arn = aws_lb_target_group.wordpress_lb_target_group.id
   target_id        = aws_instance.wordpress_1.id
 }
 
@@ -179,6 +179,23 @@ resource "aws_lb_listener" "wordpress_alb_listener" {
   protocol          = "HTTP"
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.wordpress_target_group.arn
+    target_group_arn = aws_lb_target_group.wordpress_lb_target_group.arn
   }
+}
+
+resource "aws_instance" "wordpress_2" {
+  ami                    = var.wordpress_ami
+  instance_type          = "t2.micro"
+  key_name               = var.key_name
+  subnet_id              = aws_subnet.public_1c.id
+  vpc_security_group_ids = [aws_security_group.webserver_sg.id]
+
+  tags = {
+    Name = "wordpress-1c"
+  }
+}
+
+resource "aws_lb_target_group_attachment" "wordpress_lb_target_group_attachment_2" {
+  target_group_arn = aws_lb_target_group.wordpress_lb_target_group.id
+  target_id        = aws_instance.wordpress_2.id
 }
