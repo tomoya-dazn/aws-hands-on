@@ -1,7 +1,12 @@
-- name: Install php
+- name: Enable the module as provided
+  shell:
+    cmd: dnf -y module enable php:7.4
+
+- name: Install php and php's modules
   dnf:
     name:
       - php
+      - php-mbstring
+      - php-xml
       - php-mysqlnd
-      - php-json
     state: latest

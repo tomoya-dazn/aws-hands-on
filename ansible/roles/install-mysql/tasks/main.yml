@@ -1,0 +1,4 @@
+- name: Install MySQL
+  dnf:
+    name: mysql
+    state: latest

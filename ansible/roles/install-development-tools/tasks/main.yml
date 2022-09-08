@@ -1,4 +1,0 @@
-- name: Install the 'Development tools' package group
-  dnf:
-    name: "@Development tools"
-    state: present
