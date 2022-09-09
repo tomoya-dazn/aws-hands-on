@@ -1,9 +1,10 @@
-- name: Enable the module as provided
+- name: Enable to install PHP 7.4
   shell:
-    cmd: dnf -y module enable php:7.4
+    cmd: "amazon-linux-extras enable php7.4"
+  changed_when: False
 
 - name: Install php and php's modules
-  dnf:
+  yum:
     name:
       - php
       - php-mbstring

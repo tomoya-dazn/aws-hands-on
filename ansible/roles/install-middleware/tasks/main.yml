@@ -1,6 +1,11 @@
 - name: Install the latest version of Apache
-  dnf:
+  yum:
     name: httpd
+    state: latest
+
+- name: Install MySQL
+  yum:
+    name: mysql
     state: latest
 
 - name: Enable service httpd

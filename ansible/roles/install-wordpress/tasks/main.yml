@@ -1,11 +1,11 @@
 - name: Download wordpress
   get_url:
-    url: https://ja.wordpress.org/wordpress-6.0.1-ja.tar.gz
+    url: https://ja.wordpress.org/latest-ja.tar.gz
     dest: /tmp/
 
 - name: Unarcive wordpress
   unarchive:
-    src: /tmp/wordpress-6.0.1-ja.tar.gz
+    src: /tmp/wordpress-6.0.2-ja.tar.gz
     dest: /tmp/
     remote_src: yes
 

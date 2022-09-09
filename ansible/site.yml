@@ -3,7 +3,7 @@
   become: yes
   roles:
     - update-operating-system
+    - install-middleware
     - install-php
-    - install-httpd
-    - install-mysql
     - install-wordpress
+    - restart-httpd
