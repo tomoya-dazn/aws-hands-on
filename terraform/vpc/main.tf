@@ -25,62 +25,62 @@ variable "secret_key" {
 }
 
 # vpc
-resource "aws_vpc" "wordpress-subnet" {
+resource "aws_vpc" "wordpress-vpc" {
   cidr_block = "10.0.0.0/16"
 
   tags = {
-    Name = "wordpress-subnet"
+    Name = "wordpress-vpc"
   }
 }
 
 # subnet
 resource "aws_subnet" "public-1a" {
-  vpc_id                  = aws_vpc.wordpress-subnet.id
+  vpc_id                  = aws_vpc.wordpress-vpc.id
   cidr_block              = "10.0.0.0/24"
   availability_zone       = "${var.region}a"
   map_public_ip_on_launch = false
 
   tags = {
-    Name = "wordpress-public-1a"
+    Name = "wordpress-subnet-public-1a"
   }
 }
 
 resource "aws_subnet" "public-1c" {
-  vpc_id                  = aws_vpc.wordpress-subnet.id
+  vpc_id                  = aws_vpc.wordpress-vpc.id
   cidr_block              = "10.0.1.0/24"
   availability_zone       = "${var.region}c"
   map_public_ip_on_launch = false
 
   tags = {
-    Name = "wordpress-public-1c"
+    Name = "wordpress-subnet-public-1c"
   }
 }
 
 resource "aws_subnet" "private-1a" {
-  vpc_id                  = aws_vpc.wordpress-subnet.id
+  vpc_id                  = aws_vpc.wordpress-vpc.id
   cidr_block              = "10.0.2.0/24"
   availability_zone       = "${var.region}a"
   map_public_ip_on_launch = false
 
   tags = {
-    Name = "wordpress-private-1a"
+    Name = "wordpress-subnet-private-1a"
   }
 }
 
 resource "aws_subnet" "private-1c" {
-  vpc_id                  = aws_vpc.wordpress-subnet.id
+  vpc_id                  = aws_vpc.wordpress-vpc.id
   cidr_block              = "10.0.3.0/24"
   availability_zone       = "${var.region}c"
   map_public_ip_on_launch = false
 
   tags = {
-    Name = "wordpress-private-1c"
+    Name = "wordpress-subnet-private-1c"
   }
 }
 
 # Internet Gateway
 resource "aws_internet_gateway" "wordpress-igw" {
-  vpc_id = aws_vpc.wordpress-subnet.id
+  vpc_id = aws_vpc.wordpress-vpc.id
 
   tags = {
     Name = "wordpress-internet-gateway"
@@ -89,7 +89,7 @@ resource "aws_internet_gateway" "wordpress-igw" {
 
 # route table
 resource "aws_route_table" "wordpress-private1a-route-table" {
-  vpc_id = aws_vpc.wordpress-subnet.id
+  vpc_id = aws_vpc.wordpress-vpc.id
 
   tags = {
     "Name" = "wordpress-private1a-route-table"
@@ -102,7 +102,7 @@ resource "aws_route_table_association" "associate-private1a" {
 }
 
 resource "aws_route_table" "wordpress-private1c-route-table" {
-  vpc_id = aws_vpc.wordpress-subnet.id
+  vpc_id = aws_vpc.wordpress-vpc.id
 
   tags = {
     "Name" = "wordpress-private1c-route-table"
@@ -115,7 +115,7 @@ resource "aws_route_table_association" "associate-private1c" {
 }
 
 resource "aws_route_table" "wordpress-public-route-table" {
-  vpc_id = aws_vpc.wordpress-subnet.id
+  vpc_id = aws_vpc.wordpress-vpc.id
 
   tags = {
     "Name" = "wordpress-public-route-table"

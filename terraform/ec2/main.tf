@@ -18,16 +18,30 @@ variable "access_key" {
 variable "secret_key" {
 }
 
+variable "wordpress_ami" {
+}
+
+variable "key_name" {
+}
+
 provider "aws" {
   region     = var.region
   access_key = var.access_key
   secret_key = var.secret_key
 }
 
-esource "aws_security_group" "webserver_sg" {
+# security group
+data "aws_vpc" "wordpress-vpc" {
+  filter {
+    name   = "tag:Name"
+    values = ["wordpress-vpc"]
+  }
+}
+
+resource "aws_security_group" "webserver_sg" {
   name        = "webserver_security_group"
   description = "Security Group for WordPress server"
-  vpc_id      = var.default_vpc_id
+  vpc_id      = data.aws_vpc.wordpress-vpc.*.id[0]
 
   ingress = [
     {
@@ -65,4 +79,25 @@ esource "aws_security_group" "webserver_sg" {
     security_groups  = []
     self             = false
   }]
+}
+
+# ec2
+data "aws_subnet" "public-1a" {
+  filter {
+    name   = "tag:Name"
+    values = ["wordpress-subnet-public-1a"]
+  }
+}
+
+resource "aws_instance" "wordpress_1" {
+  ami                         = var.wordpress_ami
+  instance_type               = "t2.micro"
+  key_name                    = var.key_name
+  subnet_id                   = data.aws_subnet.public-1a.*.id[0]
+  vpc_security_group_ids      = [aws_security_group.webserver_sg.id]
+  associate_public_ip_address = true
+
+  tags = {
+    Name = "wordpress-1a"
+  }
 }
