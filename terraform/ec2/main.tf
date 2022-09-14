@@ -79,6 +79,10 @@ resource "aws_security_group" "webserver_sg" {
     security_groups  = []
     self             = false
   }]
+
+  tags = {
+    Name = "webserver-sg"
+  }
 }
 
 # ec2
